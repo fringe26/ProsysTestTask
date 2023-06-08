@@ -4,7 +4,7 @@ using Repository.Repositories.Abstraction;
 
 namespace Repository.Repositories.Implementation
 {
-    public class EfCoreRepository<T> : IRepository<T> where T : class
+    public class EfCoreRepository<T,TId> : IRepository<T,TId> where T : class
     {
         protected readonly ExamDbContext _context;
 
@@ -17,22 +17,21 @@ namespace Repository.Repositories.Implementation
         {
             return await _context.Set<T>().ToListAsync();
         }
-        public async Task<T> DetailsById(int? id)
-        {
-            return await _context.Set<T>().FindAsync(id);
-        }
+     
         public async Task<bool> AddAsync(T item)
         {
             try
             {
                 await _context.Set<T>().AddAsync(item);
                 await _context.SaveChangesAsync();
+
                 return true;
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
+
         }
 
         public async Task<bool> Update(T item)
@@ -53,6 +52,7 @@ namespace Repository.Repositories.Implementation
         {
             try
             {
+                _context.Set<T>().Remove(item);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -60,6 +60,11 @@ namespace Repository.Repositories.Implementation
             {
                 return false;
             }
+        }
+
+        public async Task<T> DetailsByKey(TId key)
+        {
+            return await _context.Set<T>().FindAsync(key);
         }
     }
 }

@@ -1,14 +1,25 @@
 using Microsoft.EntityFrameworkCore;
 using Repository.DAL;
+using Repository.Repositories.Implementation;
+using Services.ExamService;
+using Services.ExamService.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<SubjectRepository>();
+builder.Services.AddScoped<StudentRepository>();
+builder.Services.AddScoped<ExamRepository>();
+
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 
 builder.Services.AddDbContext<ExamDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 var app = builder.Build();
+
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

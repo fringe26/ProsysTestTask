@@ -25,7 +25,7 @@ namespace DomainModels.Models.ExamModel
         [Range(1, 12)]
         public int Class { get; set; }
 
-        public ICollection<Exam> Exams { get; set; }
+        public ICollection<Exam> Exams { get; set; } = new List<Exam>();
     }
 
 }

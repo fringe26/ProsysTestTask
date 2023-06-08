@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories.Abstraction
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<T,TId> where T : class
     {
         Task<IList<T>> GetAllAsync();
-        Task<T> DetailsById(int? id);
+        Task<T> DetailsByKey(TId key);
         Task<bool> AddAsync(T item);
         Task<bool> Update(T item);
         Task<bool> DeleteAsync(T item);

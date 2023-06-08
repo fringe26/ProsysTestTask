@@ -25,7 +25,7 @@ namespace DomainModels.Models.ExamModel
         [StringLength(20)]
         public string TeacherLastName { get; set; }
 
-        public ICollection<Exam> Exams { get; set; }
+        public ICollection<Exam> Exams { get; set; } = new List<Exam>();
     }
 
 }
