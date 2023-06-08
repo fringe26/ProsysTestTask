@@ -43,9 +43,8 @@
                 @Html.DisplayFor(modelItem => item.Subject.SubjectCode)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("Edit", "Edit",  new { studentNumber = item.StudentNumber, subjectCode = item.SubjectCode }) |
+                    @Html.ActionLink("Delete", "Delete", new { studentNumber = item.StudentNumber, subjectCode = item.SubjectCode })
             </td>
         </tr>
 }

@@ -21,7 +21,7 @@ namespace ExamMVC.Controllers
  
         public async Task<IActionResult> Index()
         {
-           ;
+           
             return View(await _examService.GetAllAsync());
         }
 
@@ -45,7 +45,8 @@ namespace ExamMVC.Controllers
                 {
                     Subjects = await _subjectService.GetAllAsync() as List<Subject>,
                     Students = await _studentService.GetAllAsync() as List<Student>
-                }
+                },
+                
             };
 
             return View(viewModel);
@@ -54,21 +55,27 @@ namespace ExamMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Exam.ExamDate,Exam.Grade,Exam.StudentNumber,Exam.SubjectCode")] ExamViewModel examViewModel)
+        public async Task<IActionResult> Create([Bind("ExamDate,Grade,StudentNumber,SubjectCode")] ExamViewModel examViewModel)
         {
+          
+
             if (ModelState.IsValid)
             {
-                var result = await _examService.CreateAsync(examViewModel.Exam);
+                var exam = new Exam
+                {
+                    ExamDate = examViewModel.ExamDate,
+                    Grade = examViewModel.Grade,
+                    StudentNumber = examViewModel.StudentNumber,
+                    SubjectCode = examViewModel.SubjectCode
+                };
+
+                var result = await _examService.CreateAsync(exam);
                 if (result)
                     return RedirectToAction(nameof(Index));
             }
 
             // Если мы дошли до этого места, что-то пошло не так, повторно заполните DropBoxViewModel
-            examViewModel.DropBoxViewModel = new DropBoxViewModel
-            {
-                Subjects = await _subjectService.GetAllAsync() as List<Subject>,
-                Students = await _studentService.GetAllAsync() as List<Student>
-            };
+           
 
             return View(examViewModel);
         }
@@ -76,28 +83,49 @@ namespace ExamMVC.Controllers
 
 
 
-        public async Task<IActionResult> Edit((int, string) id)
+        public async Task<IActionResult> Edit(int studentNumber, string subjectCode)
         {
-            var exam = await _examService.GetAsync(id);
+            var exam = await _examService.GetAsync((studentNumber,subjectCode));
             if (exam == null)
             {
                 return NotFound();
             }
-            return View(exam);
+
+            var viewModel = new ExamViewModel
+            {
+                DropBoxViewModel = new DropBoxViewModel
+                {
+                    Subjects = await _subjectService.GetAllAsync() as List<Subject>,
+                    Students = await _studentService.GetAllAsync() as List<Student>
+                },
+                Grade = exam.Grade,
+                ExamDate = exam.ExamDate,
+            };
+
+            return View(viewModel);
         }
 
     
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit((int, string) id, [Bind("ExamDate,Grade,StudentNumber,SubjectCode")] Exam exam)
+        public async Task<IActionResult> Edit(int studentNumber, string subjectCode, [Bind("ExamDate,Grade,StudentNumber,SubjectCode")] ExamViewModel examViewModel)
         {
-            if (!id.Equals((exam.StudentNumber, exam.SubjectCode)))
+            var exam = new Exam();
+            if (!(studentNumber,subjectCode).Equals((examViewModel.StudentNumber, examViewModel.SubjectCode)))
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                 exam = new Exam
+                {
+                    Grade = examViewModel.Grade,
+                    ExamDate = examViewModel.ExamDate,
+                    StudentNumber = examViewModel.StudentNumber,
+                    SubjectCode = examViewModel.SubjectCode
+                };
+
                 var result = await _examService.UpdateAsync(exam);
                 if (result)
                     return RedirectToAction(nameof(Index));
@@ -108,9 +136,9 @@ namespace ExamMVC.Controllers
         }
 
 
-        public async Task<IActionResult> Delete((int, string) id)
+        public async Task<IActionResult> Delete(int studentNumber, string subjectCode)
         {
-            var exam = await _examService.GetAsync(id);
+            var exam = await _examService.GetAsync((studentNumber,subjectCode));
             if (exam == null)
             {
                 return NotFound();
@@ -121,9 +149,9 @@ namespace ExamMVC.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed((int, string) id)
+        public async Task<IActionResult> DeleteConfirmed(int studentNumber, string subjectCode)
         {
-            var exam = await _examService.GetAsync(id);
+            var exam = await _examService.GetAsync((studentNumber, subjectCode));
             if (exam != null)
             {
                 var result = await _examService.DeleteAsync(exam);

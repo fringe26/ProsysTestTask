@@ -14,7 +14,7 @@ namespace Repository.Repositories.Implementation
             _context = context;
         }
 
-        public async Task<IList<T>> GetAllAsync()
+        public virtual async Task<IList<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
         }

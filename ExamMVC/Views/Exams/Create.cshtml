@@ -12,27 +12,30 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Exam.ExamDate" class="control-label"></label>
-                <input asp-for="Exam.ExamDate" class="form-control" />
-                <span asp-validation-for="Exam.ExamDate" class="text-danger"></span>
+                <label asp-for="ExamDate" class="control-label"></label>
+                <input asp-for="ExamDate" class="form-control" />
+                <span asp-validation-for="ExamDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Exam.Grade" class="control-label"></label>
-                <input asp-for="Exam.Grade" class="form-control" />
-                <span asp-validation-for="Exam.Grade" class="text-danger"></span>
+                <label asp-for="Grade" class="control-label"></label>
+                <input asp-for="Grade" class="form-control" />
+                <span asp-validation-for="Grade" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Exam.StudentNumber" class="control-label"></label>
-                <select asp-for="Exam.StudentNumber" class="form-control"
+                <label asp-for="StudentNumber" class="control-label"></label>
+                <select asp-for="StudentNumber" class="form-control"
                         asp-items="@(new SelectList(Model.DropBoxViewModel.Students, "StudentNumber", "FirstName"))">
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="Exam.SubjectCode" class="control-label"></label>
-                <select asp-for="Exam.SubjectCode" class="form-control"
+                <label asp-for="SubjectCode" class="control-label"></label>
+                <select asp-for="SubjectCode" class="form-control"
                         asp-items="@(new SelectList(Model.DropBoxViewModel.Subjects, "SubjectCode", "SubjectName"))">
                 </select>
             </div>
+
+            <input type="hidden" asp-for="DropBoxViewModel.Subjects" />
+            <input type="hidden" asp-for="DropBoxViewModel.Students" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

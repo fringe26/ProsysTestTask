@@ -16,6 +16,12 @@ namespace Repository.Repositories.Implementation
         {
         }
 
+        public override async Task<IList<Exam>> GetAllAsync()
+        {
+            return await Context.Set<Exam>().Include(e => e.Student).Include(e => e.Subject).ToListAsync();
+       
+        }
+
         public override async Task<Exam> DetailsByKey((int, string) key)
         {
             return await Context.Exams.SingleOrDefaultAsync(e => e.StudentNumber == key.Item1 && e.SubjectCode == key.Item2);
