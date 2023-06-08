@@ -1,40 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DomainModels.Models.ExamModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DomainModels.Models.ExamModel;
-using Repository.DAL;
+using Services.ExamService.Abstractions;
 
 namespace ExamMVC.Controllers
 {
     public class StudentsController : Controller
     {
-        private readonly ExamDbContext _context;
+        private readonly IStudentService _studentService;
 
-        public StudentsController(ExamDbContext context)
+        public StudentsController(IStudentService service)
         {
-            _context = context;
+            _studentService = service;
         }
 
         // GET: Students
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Students.ToListAsync());
+              return View(await _studentService.GetAllAsync());
         }
 
         // GET: Students/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Students == null)
+            if (id == null || _studentService.GetAllAsync() == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Students
-                .FirstOrDefaultAsync(m => m.StudentNumber == id);
+            var student = await _studentService.GetAsync(id);
             if (student == null)
             {
                 return NotFound();
@@ -58,22 +52,21 @@ namespace ExamMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(student);
-                await _context.SaveChangesAsync();
+                _studentService.CreateAsync(student);
                 return RedirectToAction(nameof(Index));
             }
             return View(student);
         }
 
         // GET: Students/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || _context.Students == null)
+            if (id == null || _studentService.GetAllAsync() == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Students.FindAsync(id);
+            var student = await _studentService.GetAsync(id);
             if (student == null)
             {
                 return NotFound();
@@ -95,37 +88,24 @@ namespace ExamMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(student);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!StudentExists(student.StudentNumber))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+           
+               await  _studentService.UpdateAsync(student);
+                
+          
                 return RedirectToAction(nameof(Index));
             }
             return View(student);
         }
 
         // GET: Students/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || _context.Students == null)
+            if (id == null || _studentService.GetAllAsync() == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Students
-                .FirstOrDefaultAsync(m => m.StudentNumber == id);
+            var student = await _studentService.GetAsync(id);
             if (student == null)
             {
                 return NotFound();
@@ -139,23 +119,16 @@ namespace ExamMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Students == null)
+            if (_studentService.GetAllAsync() == null)
             {
                 return Problem("Entity set 'ExamDbContext.Students'  is null.");
             }
-            var student = await _context.Students.FindAsync(id);
+            var student = await _studentService.GetAsync(id);
             if (student != null)
             {
-                _context.Students.Remove(student);
+                await _studentService.DeleteAsync(student);
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool StudentExists(int id)
-        {
-          return _context.Students.Any(e => e.StudentNumber == id);
         }
     }
 }
