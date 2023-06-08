@@ -14,6 +14,8 @@ builder.Services.AddScoped<StudentRepository>();
 builder.Services.AddScoped<ExamRepository>();
 
 builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<IStudentService,StudentService>();
+builder.Services.AddScoped<IExamService, ExamService>();
 
 builder.Services.AddDbContext<ExamDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 var app = builder.Build();

@@ -6,7 +6,8 @@ namespace Repository.Repositories.Implementation
 {
     public class EfCoreRepository<T,TId> : IRepository<T,TId> where T : class
     {
-        protected readonly ExamDbContext _context;
+        private readonly ExamDbContext _context;
+        protected ExamDbContext Context => _context;
 
         public EfCoreRepository(ExamDbContext context)
         {
@@ -62,7 +63,7 @@ namespace Repository.Repositories.Implementation
             }
         }
 
-        public async Task<T> DetailsByKey(TId key)
+        public virtual async Task<T> DetailsByKey(TId key)
         {
             return await _context.Set<T>().FindAsync(key);
         }

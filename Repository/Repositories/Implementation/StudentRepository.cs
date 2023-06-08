@@ -10,7 +10,7 @@ namespace Repository.Repositories.Implementation
 {
     public class StudentRepository : EfCoreRepository<Student,int>
     {
-        public ExamDbContext appDbContext { get { return _context; } }
+
 
         public StudentRepository(ExamDbContext context) : base(context)
         {

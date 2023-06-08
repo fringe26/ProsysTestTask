@@ -1,4 +1,5 @@
 ﻿using DomainModels.Models.ExamModel;
+using Repository.Repositories.Implementation;
 using Services.ExamService.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -10,29 +11,36 @@ namespace Services.ExamService
 {
     public class ExamService : IExamService
     {
-        public Task<bool> CreateAsync(Exam exam)
+        private readonly ExamRepository _repository;
+
+        public ExamService(ExamRepository repository)
         {
-            throw new NotImplementedException();
+            _repository = repository;
         }
 
-        public Task<bool> DeleteAsync(Exam subject)
+        public async Task<bool> CreateAsync(Exam exam)
         {
-            throw new NotImplementedException();
+            return await _repository.AddAsync(exam);
         }
 
-        public Task<IList<Exam>> GetAllAsync()
+        public async Task<Exam> GetAsync((int, string) id)
         {
-            throw new NotImplementedException();
+            return await _repository.DetailsByKey(id);
         }
 
-        public Task<Exam> GetAsync(string id)
+        public async Task<IList<Exam>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAllAsync();
         }
 
-        public Task<bool> UpdateAsync(Exam subject)
+        public async Task<bool> UpdateAsync(Exam exam)
         {
-            throw new NotImplementedException();
+            return await _repository.Update(exam);
+        }
+
+        public async Task<bool> DeleteAsync(Exam exam)
+        {
+            return await _repository.DeleteAsync(exam);
         }
     }
 }

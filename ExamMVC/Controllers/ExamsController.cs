@@ -1,144 +1,116 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using DomainModels.Models.ExamModel;
-using Repository.DAL;
+using Services.ExamService.Abstractions;
+using ExamMVC.ViewModels;
 
 namespace ExamMVC.Controllers
 {
     public class ExamsController : Controller
     {
-        private readonly ExamDbContext _context;
-
-        public ExamsController(ExamDbContext context)
+        private readonly IExamService _examService;
+        private readonly IStudentService _studentService;
+        private readonly ISubjectService _subjectService;
+        
+        public ExamsController(IExamService examService, IStudentService studentService, ISubjectService subjectService)
         {
-            _context = context;
+            _examService = examService;
+            _studentService = studentService;
+            _subjectService = subjectService;
         }
 
-        // GET: Exams
+ 
         public async Task<IActionResult> Index()
         {
-            var examDbContext = _context.Exams.Include(e => e.Student).Include(e => e.Subject);
-            return View(await examDbContext.ToListAsync());
+           ;
+            return View(await _examService.GetAllAsync());
         }
 
-        // GET: Exams/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Exams == null)
-            {
-                return NotFound();
-            }
 
-            var exam = await _context.Exams
-                .Include(e => e.Student)
-                .Include(e => e.Subject)
-                .FirstOrDefaultAsync(m => m.StudentNumber == id);
+        public async Task<IActionResult> Details((int, string) id)
+        {
+            var exam = await _examService.GetAsync(id);
             if (exam == null)
             {
                 return NotFound();
             }
-
             return View(exam);
         }
 
-        // GET: Exams/Create
-        public IActionResult Create()
+   
+        public async Task<IActionResult> Create()
         {
-            ViewData["StudentNumber"] = new SelectList(_context.Students, "StudentNumber", "FirstName");
-            ViewData["SubjectCode"] = new SelectList(_context.Subjects, "SubjectCode", "SubjectCode");
-            return View();
+            var viewModel = new ExamViewModel
+            {
+                DropBoxViewModel = new DropBoxViewModel
+                {
+                    Subjects = await _subjectService.GetAllAsync() as List<Subject>,
+                    Students = await _studentService.GetAllAsync() as List<Student>
+                }
+            };
+
+            return View(viewModel);
         }
 
-        // POST: Exams/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ExamDate,Grade,StudentNumber,SubjectCode")] Exam exam)
+        public async Task<IActionResult> Create([Bind("Exam.ExamDate,Exam.Grade,Exam.StudentNumber,Exam.SubjectCode")] ExamViewModel examViewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(exam);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var result = await _examService.CreateAsync(examViewModel.Exam);
+                if (result)
+                    return RedirectToAction(nameof(Index));
             }
-            ViewData["StudentNumber"] = new SelectList(_context.Students, "StudentNumber", "FirstName", exam.StudentNumber);
-            ViewData["SubjectCode"] = new SelectList(_context.Subjects, "SubjectCode", "SubjectCode", exam.SubjectCode);
-            return View(exam);
+
+            // Если мы дошли до этого места, что-то пошло не так, повторно заполните DropBoxViewModel
+            examViewModel.DropBoxViewModel = new DropBoxViewModel
+            {
+                Subjects = await _subjectService.GetAllAsync() as List<Subject>,
+                Students = await _studentService.GetAllAsync() as List<Student>
+            };
+
+            return View(examViewModel);
         }
 
-        // GET: Exams/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Exams == null)
-            {
-                return NotFound();
-            }
 
-            var exam = await _context.Exams.FindAsync(id);
+
+
+        public async Task<IActionResult> Edit((int, string) id)
+        {
+            var exam = await _examService.GetAsync(id);
             if (exam == null)
             {
                 return NotFound();
             }
-            ViewData["StudentNumber"] = new SelectList(_context.Students, "StudentNumber", "FirstName", exam.StudentNumber);
-            ViewData["SubjectCode"] = new SelectList(_context.Subjects, "SubjectCode", "SubjectCode", exam.SubjectCode);
             return View(exam);
         }
 
-        // POST: Exams/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ExamDate,Grade,StudentNumber,SubjectCode")] Exam exam)
+        public async Task<IActionResult> Edit((int, string) id, [Bind("ExamDate,Grade,StudentNumber,SubjectCode")] Exam exam)
         {
-            if (id != exam.StudentNumber)
+            if (!id.Equals((exam.StudentNumber, exam.SubjectCode)))
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(exam);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ExamExists(exam.StudentNumber))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                var result = await _examService.UpdateAsync(exam);
+                if (result)
+                    return RedirectToAction(nameof(Index));
+
+                return View(exam);
             }
-            ViewData["StudentNumber"] = new SelectList(_context.Students, "StudentNumber", "FirstName", exam.StudentNumber);
-            ViewData["SubjectCode"] = new SelectList(_context.Subjects, "SubjectCode", "SubjectCode", exam.SubjectCode);
             return View(exam);
         }
 
-        // GET: Exams/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Exams == null)
-            {
-                return NotFound();
-            }
 
-            var exam = await _context.Exams
-                .Include(e => e.Student)
-                .Include(e => e.Subject)
-                .FirstOrDefaultAsync(m => m.StudentNumber == id);
+        public async Task<IActionResult> Delete((int, string) id)
+        {
+            var exam = await _examService.GetAsync(id);
             if (exam == null)
             {
                 return NotFound();
@@ -147,28 +119,19 @@ namespace ExamMVC.Controllers
             return View(exam);
         }
 
-        // POST: Exams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed((int, string) id)
         {
-            if (_context.Exams == null)
-            {
-                return Problem("Entity set 'ExamDbContext.Exams'  is null.");
-            }
-            var exam = await _context.Exams.FindAsync(id);
+            var exam = await _examService.GetAsync(id);
             if (exam != null)
             {
-                _context.Exams.Remove(exam);
+                var result = await _examService.DeleteAsync(exam);
+                if (result)
+                    return RedirectToAction(nameof(Index));
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool ExamExists(int id)
-        {
-          return _context.Exams.Any(e => e.StudentNumber == id);
+            return NotFound();
         }
     }
 }

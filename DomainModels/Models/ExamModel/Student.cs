@@ -10,7 +10,7 @@ namespace DomainModels.Models.ExamModel
     public class Student
     {
         [Required]
-        [Range(1, 99999)]
+        [Range(0, 99999)]
         public int StudentNumber { get; set; }
 
         [Required]

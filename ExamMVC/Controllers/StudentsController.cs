@@ -14,13 +14,13 @@ namespace ExamMVC.Controllers
             _studentService = service;
         }
 
-        // GET: Students
+
         public async Task<IActionResult> Index()
         {
               return View(await _studentService.GetAllAsync());
         }
 
-        // GET: Students/Details/5
+  
         public async Task<IActionResult> Details(int id)
         {
             if (id == null || _studentService.GetAllAsync() == null)
@@ -37,15 +37,12 @@ namespace ExamMVC.Controllers
             return View(student);
         }
 
-        // GET: Students/Create
+
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Students/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("StudentNumber,FirstName,LastName,Class")] Student student)
@@ -58,7 +55,7 @@ namespace ExamMVC.Controllers
             return View(student);
         }
 
-        // GET: Students/Edit/5
+
         public async Task<IActionResult> Edit(int id)
         {
             if (id == null || _studentService.GetAllAsync() == null)
@@ -74,9 +71,7 @@ namespace ExamMVC.Controllers
             return View(student);
         }
 
-        // POST: Students/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+   
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("StudentNumber,FirstName,LastName,Class")] Student student)
@@ -97,7 +92,7 @@ namespace ExamMVC.Controllers
             return View(student);
         }
 
-        // GET: Students/Delete/5
+
         public async Task<IActionResult> Delete(int id)
         {
             if (id == null || _studentService.GetAllAsync() == null)
@@ -114,7 +109,7 @@ namespace ExamMVC.Controllers
             return View(student);
         }
 
-        // POST: Students/Delete/5
+   
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
