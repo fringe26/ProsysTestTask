@@ -41,12 +41,10 @@ namespace ExamMVC.Controllers
         {
             var viewModel = new ExamViewModel
             {
-                DropBoxViewModel = new DropBoxViewModel
-                {
-                    Subjects = await _subjectService.GetAllAsync() as List<Subject>,
-                    Students = await _studentService.GetAllAsync() as List<Student>
-                },
-                
+              
+              Subjects = await _subjectService.GetAllAsync(),
+              Students = await _studentService.GetAllAsync()
+
             };
 
             return View(viewModel);
@@ -55,7 +53,7 @@ namespace ExamMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ExamDate,Grade,StudentNumber,SubjectCode")] ExamViewModel examViewModel)
+        public async Task<IActionResult> Create(ExamViewModel examViewModel)
         {
           
 
@@ -93,11 +91,10 @@ namespace ExamMVC.Controllers
 
             var viewModel = new ExamViewModel
             {
-                DropBoxViewModel = new DropBoxViewModel
-                {
-                    Subjects = await _subjectService.GetAllAsync() as List<Subject>,
-                    Students = await _studentService.GetAllAsync() as List<Student>
-                },
+              
+              Subjects = await _subjectService.GetAllAsync() ,
+              Students = await _studentService.GetAllAsync(),
+            
                 Grade = exam.Grade,
                 ExamDate = exam.ExamDate,
             };

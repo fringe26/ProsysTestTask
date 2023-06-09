@@ -24,18 +24,18 @@
             <div class="form-group">
                 <label asp-for="StudentNumber" class="control-label"></label>
                 <select asp-for="StudentNumber" class="form-control"
-                        asp-items="@(new SelectList(Model.DropBoxViewModel.Students, "StudentNumber", "FirstName"))">
+                        asp-items="@(new SelectList(Model.Students, "StudentNumber", "FirstName"))">
                 </select>
             </div>
             <div class="form-group">
                 <label asp-for="SubjectCode" class="control-label"></label>
                 <select asp-for="SubjectCode" class="form-control"
-                        asp-items="@(new SelectList(Model.DropBoxViewModel.Subjects, "SubjectCode", "SubjectName"))">
+                        asp-items="@(new SelectList(Model.Subjects, "SubjectCode", "SubjectName"))">
                 </select>
             </div>
 
-            <input type="hidden" asp-for="DropBoxViewModel.Subjects" />
-            <input type="hidden" asp-for="DropBoxViewModel.Students" />
+            <input type="hidden" asp-for="@Model.Subjects" />
+            <input type="hidden" asp-for="@Model.Students" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

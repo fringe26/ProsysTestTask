@@ -14,7 +14,8 @@ namespace ExamMVC.ViewModels
         public int Grade { get; set; }
         public int StudentNumber { get; set; }
         public string SubjectCode { get; set; }
-        public DropBoxViewModel DropBoxViewModel { get; set; } = new DropBoxViewModel();
+        public IList<Subject> Subjects { get; set; } = new List<Subject>();
+        public IList<Student> Students { get; set; } = new List<Student>();
     }
 
 }

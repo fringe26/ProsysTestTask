@@ -30,12 +30,14 @@ namespace Repository.DAL
             builder.Entity<Exam>()
                 .HasOne(e => e.Subject)
                 .WithMany(s => s.Exams)
-                .HasForeignKey(e => e.SubjectCode);
+                .HasForeignKey(e => e.SubjectCode)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Exam>()
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Exams)
-                .HasForeignKey(e => e.StudentNumber);
+                .HasForeignKey(e => e.StudentNumber)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 
