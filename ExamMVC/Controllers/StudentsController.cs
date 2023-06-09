@@ -49,7 +49,7 @@ namespace ExamMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                _studentService.CreateAsync(student);
+                await _studentService.CreateAsync(student);
                 return RedirectToAction(nameof(Index));
             }
             return View(student);

@@ -105,7 +105,7 @@ namespace ExamMVC.Controllers
     
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int studentNumber, string subjectCode, [Bind("ExamDate,Grade,StudentNumber,SubjectCode")] ExamViewModel examViewModel)
+        public async Task<IActionResult> Edit(int studentNumber, string subjectCode,ExamViewModel examViewModel)
         {
             var exam = new Exam();
             if (!(studentNumber,subjectCode).Equals((examViewModel.StudentNumber, examViewModel.SubjectCode)))
